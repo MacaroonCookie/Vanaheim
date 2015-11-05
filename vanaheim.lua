@@ -83,6 +83,7 @@ end -- func getPidValue()
 
 function main(args, argsv)
   print(LOGO)
+  os.sleep(3)
   print("\n\n")
 
   devices = detectDevices()
