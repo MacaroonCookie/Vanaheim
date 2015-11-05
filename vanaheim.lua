@@ -5,7 +5,7 @@
 --]]
 
 local ARGS = {...}
-local VARGS = table.getn(ARGS)
+local ARGSV = table.getn(ARGS)
 
 -- Constants
 local TICKSPERSECOND = 20
@@ -81,7 +81,7 @@ function getPidValue(setValue,  processValue, proportionalGain, integralGain, de
   return propotionalError + integralError + derivativeError
 end -- func getPidValue()
 
-function main()
+function main(args, argsv)
   print(LOGO)
   print("\n\n")
 
@@ -98,3 +98,5 @@ function main()
     end
   end
 end -- func
+
+main(ARGS, ARGSV)
