@@ -40,17 +40,17 @@ function detectDevices()
   reactor_devices['turbines'] = {}
 
   local sidesWithPeripherals = peripheral.getNames()
-  for i, table.getn(sidesWithPeripherals) do
+  for i=1, table.getn(sidesWithPeripherals) do
     if peripheral.getType(sidesWithPeripherals[i]) == 'BigReactors-Reactor' then
+      reactor_index = reactor_index + 1
       reactor_devices['reactors'][reactor_index] = {}
       reactor_devices['reactors'][reactor_index]['side'] = sidesWithPeripherals[i]
       reactor_devices['reactors'][reactor_index]['peripheral'] = peripheral.wrap(sidesWithPeripherals[i])
-      reactor_index = reactor_index + 1
     elseif peripheral.getType(sidesWithPeripherals[i]) == 'BigReactors-Turbine' then
+      turbine_index = turbine_reactor + 1
       reactor_devices['turbines'][turbine_index] = {}
       reactor_devices['turbines'][turbine_index]['side'] = sidesWithPeripherals[i]
       reactor_devices['turbines'][turbine_index]['peripheral'] = peripheral.wrap(sidesWithPeripherals[i])
-      turbine_index = turbine_reactor + 1
     end
   end
 
