@@ -31,6 +31,28 @@ my    dMMd /NMMMMMMMMd-  `yMy
 local pid_integral_sum = 0
 local pid_previous_error = 0
 
+
+-- Event Handler
+local event_listeners = {}
+
+function addEventListener(eventName, event_callback)
+  event_listeners[eventName] = event_callback
+end
+
+function removeEventListener(eventName)
+  event_listeners[eventName] = nil
+end
+
+function eventWatcherDaemon()
+  while true do
+    local event = { os.pullEvent() }
+    if event_listeners[event[1]] ~= nil then
+      event_listeners[event[1]](event)
+    end
+  end
+end
+
+
 function detectDevices()
   local reactor_devices = {}
   local reactor_index = 0
@@ -81,6 +103,7 @@ function getPidValue(setValue,  processValue, proportionalGain, integralGain, de
   return propotionalError + integralError + derivativeError
 end -- func getPidValue()
 
+
 function main(args, argsv)
   print(LOGO)
   os.sleep(3)
@@ -100,4 +123,6 @@ function main(args, argsv)
   end
 end -- func
 
-main(ARGS, ARGSV)
+
+-- Start Primary Process
+parallel.waitForAny(main, eventWatcherDaemon)
