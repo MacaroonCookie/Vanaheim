@@ -4,9 +4,6 @@
 -- Author: Seth Cook <cooker52@gmail.com>
 --]]
 
-local ARGS = {...}
-local ARGSV = table.getn(ARGS)
-
 -- Constants
 local TICKSPERSECOND = 20
 local LOGO = [[                        `
@@ -53,6 +50,55 @@ function eventWatcherDaemon()
 end
 
 
+-- Configuration Management
+local global_configuration = {}
+local global_configuration_file = './vanaheim.conf'
+
+function saveConfiguration(config_file, configuration)
+  file = fs.open(config_file .. '.new', 'w')
+
+  for key,value in configuration do
+    file.writeLine(key .. ' = ' .. value)
+  end
+
+  file.close()
+  fs.move(config_file .. '.new', config_file)
+end
+
+function loadConfiguration(config_file)
+  if ~ fs.exists(config_file) then
+    error('Can not find confg file ' .. config_file .. '.')
+  end
+
+  file = fs.open(config_file, 'r')
+  configuration = {}
+
+  line = nil
+  while (line = file.readLine()) ~= nil do
+    key, value = string.gmatch(line, '(%w+) = (%w+)')
+    configuration[key] = value
+  end
+end
+
+function saveGlobalConfig()
+  saveConfiguration(global_configuration_file, global_configuration)
+end
+
+function loadGlobalConfig()
+  global_configuration = loadConfiguration(global_configuration_file)
+end
+
+function modifyGlobalConfig(key, value)
+  global_configuration[key] = value
+  saveConfiguration(global_configuration_file, global_configuration)
+end
+
+function getGlobalConfig(key)
+  return global_configuration[key]
+end
+
+
+-- Peripheral Management
 function detectDevices()
   local reactor_devices = {}
   local reactor_index = 0
@@ -83,6 +129,7 @@ function detectDevices()
 end -- func detectDevices()
 
 
+-- Abstract Control Functions
 function getPidValue(setValue,  processValue, proportionalGain, integralGain, derivativeGain)
   local errorValue = processValue - setValue
   local proportionalError = 0
@@ -104,7 +151,18 @@ function getPidValue(setValue,  processValue, proportionalGain, integralGain, de
 end -- func getPidValue()
 
 
-function main(args, argsv)
+-- Main Loops
+function controlDaemon()
+
+while true do
+
+  os.sleep(.1)
+end
+
+end
+
+function main()
+  args = {...}
   print(LOGO)
   os.sleep(3)
   print("\n\n")
@@ -125,4 +183,4 @@ end -- func
 
 
 -- Start Primary Process
-parallel.waitForAny(main, eventWatcherDaemon)
+parallel.waitForAny(main, eventWatcherDaemon, controlDaemon)
